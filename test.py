@@ -83,9 +83,9 @@ for i in range(0, cnt):
 num = int(out_file.readline())
 for i in range(0, num):
     f, l, t, s = map(int, out_file.readline().split())
-    sat[s].add_photo((t, f, l))
+    sat[s].add_photo((f, l, t))
     for collection in col:
-        collection.add_photo((t, f, l))
+        collection.add_photo((f, l, t))
 
 for satellite in sat:
     if not satellite.can_take():
