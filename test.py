@@ -52,13 +52,13 @@ class Collection:
                 break
         if not time_ok:
             return
-        for i in range(0, len(locations)):
-            if locations[i][0] == photo[0] and locations[i][1] == photo[1]:
-                del locations[i]
+        for i in range(0, len(self.locations)):
+            if self.locations[i][0] == photo[0] and self.locations[i][1] == photo[1]:
+                del self.locations[i]
                 break
 
     def is_taken(self):
-        return not locations
+        return not self.locations
 
 duration = int(in_file.readline())
 s_num = int(in_file.readline())
@@ -72,13 +72,13 @@ cnt = int(in_file.readline())
 col = []
 for i in range(0, cnt):
     v, l, r = map(int,in_file.readline().split())
-    locations = []
+    locs = []
     for j in range(0, l):
-        locations.append(map(int, in_file.readline().split()))
+        locs.append(map(int, in_file.readline().split()))
     times = []
     for j in range(0, r):
         times.append(map(int, in_file.readline().split()))
-    col.append(Collection(v, locations, times))
+    col.append(Collection(v, locs, times))
 
 num = int(out_file.readline())
 for i in range(0, num):
