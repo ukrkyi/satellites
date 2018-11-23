@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import sys
+from math import copysign
 
 if (len(sys.argv) != 3):
     print "Usage: " + sys.argv[0]  + " test.in test.out"
@@ -27,7 +28,20 @@ class Satellite:
 
     def calc_position(self, turn):
         diff_turn = turn - self.turn
-        # TODO
+        self.lon = (self.lon + 648000 - 15 * diff_turn) % 1296000 - 648000
+        self.lat += copysign((diff_turn * abs(self.vel)) % 1296000, self.vel)
+        while not (-324000 <= self.lat <= 324000): # Maybe we will miss 1 somewhere in this loop
+            if self.lat > 324000:
+                self.lat = 648000 - self.lat
+            else:
+                self.lat = -648000 - self.lat
+            self.vel = -self.vel
+            self.lon = self.lon % 1296000 - 648000
+        self.d[0][0] = max(self.d[0][0] - self.max_w*diff_turn, -self.max_d)
+        self.d[0][1] = min(self.d[0][1] + self.max_w*diff_turn,  self.max_d)
+        self.d[1][0] = max(self.d[1][0] - self.max_w*diff_turn, -self.max_d)
+        self.d[1][1] = min(self.d[1][1] + self.max_w*diff_turn,  self.max_d)
+        self.turn = turn
 
     def can_take(self):
         self.photos.sort(key=lambda x: x[2])
@@ -36,6 +50,8 @@ class Satellite:
             if not ((self.lat + self.d[0][0] <= photo[0] <= self.lat + self.d[0][1]) and
                     (self.lon + self.d[1][0] <= photo[1] <= self.lon + self.d[1][1])):
                 return False
+            self.d[0][1] = self.d[0][0] = photo[0] - self.lat
+            self.d[1][0] = self.d[1][1] = photo[1] - self.lon
         return True
 
 class Collection:
