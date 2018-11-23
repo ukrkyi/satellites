@@ -76,6 +76,11 @@ class Collection:
     def is_taken(self):
         return not self.locations
 
+    def __str__(self):
+        return "Locations: " + str(self.locations) + ", Ranges: " + str(self.ranges) + ", Value: " + str(self.value)
+
+    __repr__ = __str__
+
 duration = int(in_file.readline())
 s_num = int(in_file.readline())
 sat = []
