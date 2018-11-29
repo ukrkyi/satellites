@@ -99,6 +99,7 @@ class Simulation:
                     if sat.can_take(self.current, self.collections[col].get_rand_photo()):
                         print('Can take')
                         self.take_photo(col, 0, self.current, sat)
+                        col -= 1
                         break
                 col += 1
             self.current += 1
