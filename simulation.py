@@ -40,8 +40,8 @@ class Satellite:
 
     def take_photo(self, turn, location):
         if self.can_take(turn, location):
-            self.d[0][1] = self.d[0][0] = photo[0] - self.lat
-            self.d[1][0] = self.d[1][1] = photo[1] - self.lon
+            self.d[0][1] = self.d[0][0] = location[0] - self.lat
+            self.d[1][0] = self.d[1][1] = location[1] - self.lon
             return True
         return False
 
@@ -84,21 +84,23 @@ class Simulation:
         self.current = 0
 
     def take_photo(self, col, ind, turn, sat):
-        if sat.can_take(turn, self.collections[col][ind]):
-            sat.take_photo(turn, self.collections[col][ind])
-            self.collections[col].pop(ind)
+        if sat.can_take(turn, self.collections[col].locations[ind]):
+            sat.take_photo(turn, self.collections[col].locations[ind])
+            self.collections[col].locations.pop(ind)
             if self.collections[col].is_empty():
                 self.score += collections[col].value
                 self.collections.pop(col)
 
     def simulate_full(self):
         while self.current < self.duration:
-            for col in range(len(self.collections)):
+            col = 0
+            while col < len(self.collections):
                 for sat in self.satellites:
                     if sat.can_take(self.current, self.collections[col].get_rand_photo()):
                         print('Can take')
                         self.take_photo(col, 0, self.current, sat)
                         break
+                col += 1
             self.current += 1
         print(self.score)
 
@@ -113,7 +115,7 @@ with open("final_round_2016.in/final_round_2016.in/forever_alone.in") as f:
     collections = [None for i in range(num_collections)]
     for i in range(num_collections):
         collection_chr = f.readline().strip().split()
-        value = collection_chr[0]
+        value = int(collection_chr[0])
         num_locations = int(collection_chr[1])
         num_ranges = int(collection_chr[2])
         locations = [[int(i) for i in f.readline().strip().split()] for j in range(num_locations)]
