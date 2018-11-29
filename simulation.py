@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from math import copysign
 from random import randint
 
@@ -27,8 +29,8 @@ class Satellite:
 
     def can_take(self, turn, location):
         self.calc_position(turn)
-        if self.lat + self.d[0] - min(self.max_w, self.max_d) < location[0] < self.lat + + self.d[0] + min(self.max_w, self.max_d)\
-                and self.lon + + self.d[1] - min(self.max_d, self.max_w) < location[1] < self.lon + self.d[1] + min(self.max_d, self.max_w):
+        if self.lat + max(self.d[0] - self.max_w, -self.max_d) < location[0] < self.lat + min(self.d[0] + self.max_w, self.max_d)\
+                and self.lon + max(-self.max_d, self.d[1] - self.max_w) < location[1] < self.lon + min(self.max_d, self.d[1] + self.max_w):
                 return True
         return False
 
