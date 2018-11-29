@@ -12,7 +12,7 @@ class Satellite:
         self.max_w = max_w
         self.max_d = max_d
         self.turn = 0
-        self.d = [0, 0]
+        self.d = ([0, 0], [0, 0])
 
     def calc_position(self, turn):
         diff_turn = turn - self.turn
@@ -25,20 +25,25 @@ class Satellite:
                 self.lat = -648000 - self.lat
             self.vel = -self.vel
             self.lon = self.lon % 1296000 - 648000
+        self.d[0][0] = max(self.d[0][0] - self.max_w*diff_turn, -self.max_d)
+        self.d[0][1] = min(self.d[0][1] + self.max_w*diff_turn,  self.max_d)
+        self.d[1][0] = max(self.d[1][0] - self.max_w*diff_turn, -self.max_d)
+        self.d[1][1] = min(self.d[1][1] + self.max_w*diff_turn,  self.max_d)
         self.turn = turn
 
     def can_take(self, turn, location):
         self.calc_position(turn)
-        if self.lat + max(self.d[0] - self.max_w, -self.max_d) < location[0] < self.lat + min(self.d[0] + self.max_w, self.max_d)\
-                and self.lon + max(-self.max_d, self.d[1] - self.max_w) < location[1] < self.lon + min(self.max_d, self.d[1] + self.max_w):
-                return True
-        return False
+        if not ((self.lat + self.d[0][0] <= location[0] <= self.lat + self.d[0][1]) and
+                (self.lon + self.d[1][0] <= location[1] <= self.lon + self.d[1][1])):
+            return False
+        return True
 
     def take_photo(self, turn, location):
         if self.can_take(turn, location):
-            self.d[0] = location[0] - self.lat
-            self.d[1] = location[1] - self.lon
+            self.d[0][1] = self.d[0][0] = photo[0] - self.lat
+            self.d[1][0] = self.d[1][1] = photo[1] - self.lon
             return True
+        return False
 
     def __str__(self):
         return " ".join([str(i) for i in [self.lat, self.lon, self.vel, self.max_w, self.max_d]])
