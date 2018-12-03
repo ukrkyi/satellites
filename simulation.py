@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from math import copysign
 from random import randint
 
