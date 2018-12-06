@@ -69,7 +69,7 @@ class Collection:
         return len(self.locations) == 0
 
     def get_rand_photo(self):
-        return self.locations[randint(0, len(locations))]
+        return randint(0, len(self.locations) - 1)
 
     def total_time(self):
         return sum([i[1] - i[0] for i in self.ranges])
@@ -96,15 +96,7 @@ class Simulation:
     def simulate_full(self):
         self.order_collection_value()
         while self.current < self.duration:
-            col = 0
-            while col < len(self.collections):
-                for sat in self.satellites:
-                    if sat.can_take(self.current, self.collections[col].get_rand_photo()):
-                        print(self.current, "photo #", col)
-                        self.take_photo(col, 0, self.current, sat)
-                        col -= 1
-                        break
-                col += 1
+            self.check_for_second()
             self.current += 1
         print(self.score)
 
@@ -124,19 +116,22 @@ class Simulation:
     def find_place_suitable(self):
         pass
 
+    def check_for_second(self):
+        for sat in self.satellites:
+            for col in range(0, len(self.collections)):
+                if collections[col].time_suitable(self.current):
+                    for photo_try in range(0, len(self.collections[col].locations)):
+                        if sat.can_take(self.current, self.collections[col].locations[photo_try]):
+                            print(self.current, "collection #", col, "photo #", photo_try)
+                            self.take_photo(col, photo_try, self.current, sat)
+                            break
+
+
+
     def simulate_on_collections(self):
         while self.current < self.duration:
             self.order_collections_time()
-            col = 0
-            while col < len(self.collections):
-                if collections[col].time_suitable(self.current):
-                    for sat in self.satellites:
-                        if sat.can_take(self.current, self.collections[col].get_rand_photo()):
-                            print(self.current, "photo #", col)
-                            self.take_photo(col, 0, self.current, sat)
-                            col -= 1
-                            break
-                col += 1
+            self.check_for_second()
             self.current += 1
         print(self.score)
 
