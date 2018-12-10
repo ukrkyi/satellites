@@ -109,7 +109,7 @@ class Simulation:
     def order_collections_qvalue(self):
         self.collections.sort(key=lambda x: x.value / len(x.locations), reverse=True)
 
-    def order_colletions_tqvalue(self):
+    def order_collections_tqvalue(self):
         self.collections.sort(key=lambda x: x.value / (len(x.locations) * x.total_time()))
 
     # TODO: подумати як би не проходитись по всіх колекціях
@@ -118,19 +118,23 @@ class Simulation:
 
     def check_for_second(self):
         for sat in self.satellites:
-            for col in range(0, len(self.collections)):
+            col = 0
+            taken = False
+            while col < len(self.collections) and not taken:
                 if collections[col].time_suitable(self.current):
-                    for photo_try in range(0, len(self.collections[col].locations)):
+                    for photo_try in range(0, min(len(self.collections[col].locations), 5)):
                         if sat.can_take(self.current, self.collections[col].locations[photo_try]):
                             print(self.current, "collection #", col, "photo #", photo_try)
                             self.take_photo(col, photo_try, self.current, sat)
+                            taken = True
                             break
+                col += 1
 
 
 
     def simulate_on_collections(self):
         while self.current < self.duration:
-            self.order_collections_time()
+            self.order_collections_qvalue()
             self.check_for_second()
             self.current += 1
         print(self.score)
